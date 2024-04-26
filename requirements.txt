@@ -1,0 +1,3 @@
+xarg-python >= 1.5
+favicon
+Pillow
