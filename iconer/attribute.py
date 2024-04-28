@@ -3,7 +3,7 @@
 from urllib.parse import urljoin
 
 __project__ = "iconer"
-__version__ = "0.1.alpha"
+__version__ = "0.1"
 __description__ = "Download website favorites."
 __url_home__ = "https://github.com/bondbox/iconer/"
 __url_code__ = __url_home__
