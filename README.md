@@ -1,3 +1,3 @@
 # iconer
 
-Download website favorites.
+> Download website favorites.

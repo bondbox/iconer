@@ -1,3 +1,3 @@
-xarg-python >= 1.5
+xarg-python >= 1.6.2
 favicon
 Pillow
