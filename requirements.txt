@@ -1,3 +1,4 @@
-xarg-python >= 1.6.2
+xkits-command>=0.5.3
+xkits-sheet>=0.1
+requests
 favicon
-Pillow

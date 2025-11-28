@@ -1,17 +1,23 @@
 # coding=utf-8
 
+from os.path import dirname
+from os.path import join
+from urllib.parse import urljoin
+
 from setuptools import find_packages
 from setuptools import setup
+from setuptools.command.install import install
 
 from iconer.attribute import __author__
 from iconer.attribute import __author_email__
 from iconer.attribute import __description__
 from iconer.attribute import __project__
-from iconer.attribute import __urlbugs__
-from iconer.attribute import __urlcode__
-from iconer.attribute import __urldocs__
 from iconer.attribute import __urlhome__
 from iconer.attribute import __version__
+
+__urlcode__ = __urlhome__
+__urldocs__ = __urlhome__
+__urlbugs__ = urljoin(__urlhome__, "issues")
 
 
 def all_requirements():
@@ -19,8 +25,17 @@ def all_requirements():
         with open(path, "r", encoding="utf-8") as rhdl:
             return rhdl.read().splitlines()
 
-    requirements = read_requirements("requirements.txt")
+    path: str = join(dirname(__file__), "requirements.txt")
+    requirements = read_requirements(path)
     return requirements
+
+
+class CustomInstallCommand(install):
+    """Customized setuptools install command"""
+
+    def run(self):
+        install.run(self)  # Run the standard installation
+        # Execute your custom code after installation
 
 
 setup(
@@ -33,5 +48,9 @@ setup(
     project_urls={"Source Code": __urlcode__,
                   "Bug Tracker": __urlbugs__,
                   "Documentation": __urldocs__},
-    packages=find_packages(include=["iconer*"], exclude=["tests"]),
-    install_requires=all_requirements())
+    packages=find_packages(include=["iconer*"], exclude=["iconer.unittest"]),
+    install_requires=all_requirements(),
+    cmdclass={
+        "install": CustomInstallCommand,
+    }
+)

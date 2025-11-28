@@ -1,39 +1,58 @@
 MAKEFLAGS += --always-make
 
-all: build install test
+VERSION := $(shell python3 setup.py --version)
+
+all: build reinstall test
+
+
+release: all
+	if [ -n "${VERSION}" ]; then \
+		git tag -a v${VERSION} -m "release v${VERSION}"; \
+		git push origin --tags; \
+	fi
+
+version:
+	@echo ${VERSION}
 
 
 clean-cover:
-	rm -rf cover .coverage
-clean-tox: clean-cover
+	rm -rf cover .coverage coverage.xml htmlcov
+clean-tox:
 	rm -rf .stestr .tox
-clean: build-clean clean-tox
+clean: build-clean test-clean clean-cover clean-tox
 
 
 upload:
+	python3 -m pip install --upgrade xpip-upload
 	xpip-upload --config-file .pypirc dist/*
 
 
+build-prepare:
+	python3 -m pip install --upgrade -r requirements.txt
+	python3 -m pip install --upgrade xpip-build
 build-clean:
 	xpip-build --debug setup --clean
-build: build-clean
+build: build-prepare build-clean
 	xpip-build --debug setup --all
 
 
 install:
-	pip3 install --force-reinstall --no-deps dist/*.whl
+	python3 -m pip install --force-reinstall --no-deps dist/*.whl
 uninstall:
-	pip3 uninstall -y iconer
+	python3 -m pip uninstall -y iconer
 reinstall: uninstall install
 
 
-prepare-test:
-	pip3 install --upgrade pylint flake8 pytest
+test-prepare:
+	python3 -m pip install --upgrade mock pylint flake8 pytest pytest-cov
 pylint:
-	pylint $$(git ls-files iconer/*.py test/*.py example/*.py)
+	pylint $(shell git ls-files iconer/*.py)
 flake8:
-	flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
-	flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
+	flake8 iconer --count --select=E9,F63,F7,F82 --show-source --statistics
+	flake8 iconer --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
 pytest:
-	pytest
-test: prepare-test pylint flake8 pytest
+	pytest --cov=iconer --cov-report=term-missing --cov-report=xml --cov-report=html --cov-config=.coveragerc --cov-fail-under=100
+pytest-clean:
+	rm -rf .pytest_cache
+test: test-prepare pylint flake8
+test-clean: pytest-clean

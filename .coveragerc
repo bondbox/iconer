@@ -1,0 +1,12 @@
+[run]
+omit =
+    iconer/unittest/*
+    iconer/attribute.py
+
+[report]
+exclude_lines =
+    pragma: no cover
+    raise NotImplementedError
+    if __name__ == .__main__.:
+    def __repr__
+    pass
