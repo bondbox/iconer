@@ -1,4 +1,4 @@
 xkits-command>=0.5.3
-xkits-sheet>=0.1
+xkits-sheet>=0.2
 requests
 favicon
